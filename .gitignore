@@ -1,0 +1,30 @@
+# 🔹 OGÓLNE 🔹
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+
+# 🔹 BACKEND (Node.js + Express) 🔹
+backend/.env
+backend/node_modules/
+backend/dist/
+backend/build/
+backend/.env
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+backend/logs/
+
+# 🔹 FRONTEND (React + Next.js) 🔹
+frontend/.next/
+frontend/node_modules/
+frontend/.env
+frontend/out/
+frontend/.vercel/
+frontend/.swc/
+frontend/coverage/
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/logs/
