@@ -1,10 +1,8 @@
-🎬 80FindMovies
-80FindMovies to aplikacja do wyszukiwania i rekomendacji filmów na podstawie podobieństwa fabularnego. Korzysta z Next.js na frontendzie i Express.js + MongoDB na backendzie.
+🎬 FindMovies to aplikacja do wyszukiwania i rekomendacji filmów na podstawie podobieństwa fabularnego.
 
 🛠️ Technologie
-Frontend: React, Next.js, Tailwind CSS
-Backend: Node.js, Express.js, MongoDB (Atlas)
-Wyszukiwanie wektorowe: MongoDB Vector Search
+Frontend: React, Tailwind CSS
+Backend: Node.js, Express.js, MongoDB (Atlas) - Wyszukiwanie wektorowe
 
 🚀 Instalacja
 I. Ogarnij Mongo DB
@@ -32,10 +30,10 @@ II. Sklonuj repozytorium:
 2. Zmień plik /backend/.env.example na /backend/.env
 3. Wypełnij go swoimi danymi 
 
-MONGO_USER=your_mongo_user
-MONGO_PASSWORD=your_mongo_password
-MONGO_CLUSTER=your_mongo_cluster
-MONGO_DB=sample_mflix # Twoja baza - tu zostaw sample_mflix
+MONGO_USER=your_mongo_user 
+MONGO_PASSWORD=your_mongo_password 
+MONGO_CLUSTER=your_mongo_cluster 
+MONGO_DB=sample_mflix # Twoja baza - tu zostaw sample_mflix 
 MONGO_APP_NAME=your_app_name 
 
 III. Zainstaluj zależności backend i frontend
@@ -44,7 +42,7 @@ npm install
 cd ../frontend
 npm install
 
-IV. Otwurz 2 terminale i:
+IV. Otwórz 2 terminale i z głównego katalogu:
 1. Uruchom backend:
     cd backend
     npm start
@@ -58,10 +56,5 @@ V. Otwórz aplikację:
 Frontend będzie dostępny pod: http://localhost:3000
 Backend działa na http://localhost:5000
 
-
-📌 Funkcje
-✅ Wyszukiwanie filmów po tytule
-✅ Rekomendacje filmów na podstawie fabuły (wektorowo)
-
 📄 Licencja
-Projekt open-source – używaj, ucz się i rozwijaj! 🚀
+MIT License

@@ -1,26 +1,26 @@
 import axiosInstance from './axiosConfig';
 
+// Wysyłam zapytanie do API na podany endpoint z opcjonalnymi parametrami
 export const searchApi = async (endpoint: string, params?: { [key: string]: any }) => {
   try {
     if (!endpoint) {
       console.error("Endpoint jest wymagany!");
-      return null; // Zwróć null, jeśli brak endpointu
+      return null;
     }
 
-    // Ustawienie nagłówka, aby wysłać dane jako JSON
     const response = await axiosInstance.post(
       endpoint,
-      params || {}, // Wysyłamy dane, jeśli są dostępne
+      params || {},
       {
         headers: {
-          'Content-Type': 'application/json' // Nagłówek dla JSON
+          'Content-Type': 'application/json'
         }
       }
     );
-    
-    return response.data; // Zwróć dane z odpowiedzi
+
+    return response.data;
   } catch (error) {
     console.error("Błąd przy wysyłaniu zapytania:", error);
-    return null; // Zwróć null w przypadku błędu
+    return null;
   }
 };

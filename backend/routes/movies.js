@@ -5,12 +5,12 @@ const { MongoClient } = require('mongodb');
 const config = require('../config');
 const router = express.Router();
 
-// Inicjalizujemy klienta MongoDB
+// Inicjalizuję klienta MongoDB
 const client = new MongoClient(
   `mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=TaskCluster`
 );
 
-// Endpoint do wyszukiwania filmów na podstawie tytułu
+// Szukam filmów na podstawie tytułu
 router.post('/', async (req, res) => {
   const { title } = req.body;
 
@@ -19,34 +19,33 @@ router.post('/', async (req, res) => {
   }
 
   try {
-    // Łączymy się z bazą danych
     await client.connect();
     const database = client.db('sample_mflix');
     const collection = database.collection('embedded_movies');
 
-    // Wyszukiwanie po tytule
+    // Szukam filmów, ignorując wielkość liter, sortuję malejąco po roku i ograniczam do 10 wyników
     const movies = await collection
-      .find({ title: { $regex: title, $options: 'i' } }) // wyszukiwanie ignorujące wielkość liter
-      .sort({ year: -1 }) // Sortowanie od najnowszych (malejąco)
-      .limit(10) // limitujemy do 10 wyników
+      .find({ title: { $regex: title, $options: 'i' } })
+      .sort({ year: -1 })
+      .limit(10)
       .project({
-        _id: 1, // Zwracamy domyślny _id
-        title: 1, // Tytuł filmu
-        year: 1, // Rok produkcji
-        plot: 1, // Krótki opis
-        score: 1, // Podobieństwo
-        cast: 1, // Lista aktorów
-        countries: 1, // Lista krajów produkcji
-        directors: 1, // Lista reżyserów
-      })  // Ograniczamy zwracane pola do tych, które są wymagane
+        _id: 1,
+        title: 1,
+        year: 1,
+        plot: 1,
+        score: 1,
+        cast: 1,
+        countries: 1,
+        directors: 1,
+      })
       .toArray();
 
-    // Modyfikacja wyników przed zwróceniem
+    // Formatuję wyniki przed zwróceniem
     const formattedMovies = movies.map(movie => ({
-        ...movie,
-        year: typeof movie.year === 'string' ? movie.year.replace('è', '-') : movie.year
+      ...movie,
+      year: typeof movie.year === 'string' ? movie.year.replace('è', '-') : movie.year
     }));
-  
+
     res.json({ movies: formattedMovies });
 
   } catch (error) {

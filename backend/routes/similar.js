@@ -2,44 +2,38 @@ const express = require('express');
 const router = express.Router();
 const { MongoClient, ObjectId } = require('mongodb');
 const config = require('../config');
-const e = require('express');
 
-// Połączenie z bazą danych MongoDB
+// Inicjalizuję MongoDB
 const client = new MongoClient(
   `mongodb+srv://${config.MONGO_USER}:${config.MONGO_PASSWORD}@${config.MONGO_CLUSTER}/?retryWrites=true&w=majority&appName=TaskCluster`
 );
 
+// Wyszukuję podobne filmy na podstawie ID
 router.post('/', async (req, res) => {
   const { id } = req.body;
 
   if (!id) {
-    console.error('Brak ID filmu w zapytaniu.');
     return res.status(400).json({ error: 'Id filmu jest wymagane!' });
   }
 
   try {
-    console.log('Próba połączenia z MongoDB...');
     await client.connect();
     const collection = client.db('sample_mflix').collection('embedded_movies');
 
-    console.log(`Pobieranie filmu o ID: ${id}`);
-    const movie = await collection.findOne({ _id: new ObjectId(id) });  // Używamy ObjectId tutaj
+    // Pobieram film na podstawie ID
+    const movie = await collection.findOne({ _id: new ObjectId(id) });
 
     if (!movie) {
-      console.error('Film o podanym ID nie znaleziony!');
       return res.status(404).json({ error: 'Film nie znaleziony!' });
     }
 
     const plotEmbedding = movie.plot_embedding;
     if (!plotEmbedding) {
       res.json({ movies: [] });
-      
       return true;
-      //console.error('Brak wektora plot_embedding w filmie.');
-      //return res.status(500).json({ error: 'Film nie zawiera wektora plot_embedding' });
     }
 
-    // Tworzymy pipeline z wyszukiwaniem wektorowym
+    // Tworzę pipeline z wyszukiwaniem wektorowym
     const pipeline = [
       {
         "$vectorSearch": {
@@ -52,45 +46,37 @@ router.post('/', async (req, res) => {
       },
       {
         "$project": {
-          _id: 1, // Zwracamy domyślny _id
-          title: 1, // Tytuł filmu
-          year: 1, // Rok produkcji
-          plot: 1, // Krótki opis
-          score: 1, // Ocena
-          cast: 1, // Lista aktorów
-          countries: 1, // Lista krajów produkcji
-          directors: 1, // Lista reżyserów
+          _id: 1,
+          title: 1,
+          year: 1,
+          plot: 1,
+          score: 1,
+          cast: 1,
+          countries: 1,
+          directors: 1,
           "score": { $meta: 'vectorSearchScore' }
         }
       }
     ];
     const results = await collection.aggregate(pipeline).toArray();
 
-    // Tworzymy zbiór, aby śledzić unikalne filmy na podstawie tytułu i roku
+    // Łapię unikalne filmy na podstawie tytułu i roku
     const seenMovies = new Set();
     const uniqueMovies = [];
 
-    // Lecimy po wynikach i dodajemy tylko filmy, które nie mają score == 1
     for (const movie of results) {
-      if (movie.score === 1) {
-        continue;  // Pomijamy filmy z score równym 1
-      }
+      if (movie.score === 1) continue;
 
-      // Tworzymy unikalny klucz dla filmu oparty na tytule i roku
       const movieKey = `${movie.title}-${movie.year}`;
-
-      // Sprawdzamy, czy ten film już był dodany do wyników
       if (!seenMovies.has(movieKey)) {
-        // Jeśli film nie został jeszcze dodany, dodajemy go do zbioru 'seenMovies'
         seenMovies.add(movieKey);
 
-        // Jeśli rok zawiera 'è', zamieniamy go na '-'
+        // Formatuję rok, jeśli zawiera 'è'
         let formattedYear = movie.year;
         if (typeof formattedYear === 'string') {
           formattedYear = formattedYear.replace('è', ' - ');
         }
-      
-        // Dodajemy film do tablicy 'uniqueMovies'
+
         uniqueMovies.push({
           _id: movie._id,
           title: movie.title,
@@ -103,7 +89,6 @@ router.post('/', async (req, res) => {
         });
       }
 
-      // Jeśli już mamy 10 unikalnych filmów, przerywamy pętlę
       if (uniqueMovies.length === 10) break;
     }
 
